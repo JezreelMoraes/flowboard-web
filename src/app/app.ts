@@ -1,12 +1,22 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { ApiService } from './services/api.service.ts';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
-  templateUrl: './app.html',
-  styleUrl: './app.css'
+  standalone: true,
+  template: `
+    <button (click)="test()">Testar API</button>
+    <p>{{ response }}</p>
+  `
 })
 export class App {
-  protected readonly title = signal('flowboard-web');
+  response = '';
+  private api = inject(ApiService);
+
+  test() {
+    this.api.ping().subscribe({
+      next: (res) => this.response = res.message,
+      error: (err) => this.response = 'Error: ' + err.message
+    });
+  }
 }
